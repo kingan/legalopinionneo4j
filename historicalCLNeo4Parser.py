@@ -109,7 +109,7 @@ if __name__ == '__main__':
     time1 = time()
     logging.info("Process Started: " + datetime.now().strftime('%Y-%m-%d-%H:%M:%S'))
     #Create the graph database
-    gdb = Graph("http://neo4j:Capso123@ec2-54-164-106-231.compute-1.amazonaws.com:7474/db/data/")
+    gdb = Graph("localhost:7474/db/data/")
     #gdb = Graph()
 
     citationsList = open(sys.argv[1],'r').read().split()
