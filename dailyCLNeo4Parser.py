@@ -53,7 +53,7 @@ def jsonNodeParser(i):
 
 def jsonNodeHandler(inputDate, offset):
     query = "https://www.courtlistener.com/api/rest/v2/document/?date_modified__gt=%s+00:00Z&date_modified__lt=%s+00:00Z&order_by=date_modified&offset=%s"%(inputDate.strftime('%Y-%m-%d') , (inputDate + timedelta(days=1)).strftime('%Y-%m-%d'), (offset*20))
-    r = requests.get(query, auth=('gyang','waterfire'))
+    r = requests.get(query, auth=('username','password'))
     if r.ok:
         if (r.json()['objects']):
              map(jsonNodeParser, r.json()['objects'])
@@ -70,7 +70,7 @@ def jsonNodeHandler(inputDate, offset):
 
 def jsonRelationshipHandler(nodeId):
     query = "https://www.courtlistener.com/api/rest/v2/cites/?id=%s"%nodeId
-    r = requests.get(query, auth=('gyang','waterfire'))
+    r = requests.get(query, auth=('username','password'))
     relCount = ((r.json()['meta']['total_count'])/20)+1
     map(jsonRelationshipParser, [nodeId]*len(range(relCount)), range(relCount))
 
@@ -83,7 +83,7 @@ def jsonRelationshipHandler(nodeId):
 def jsonRelationshipParser(nodeId, offset):
     #global rtx, relationshipStatement
     query = "https://www.courtlistener.com/api/rest/v2/cites/?id=%s&offset=%s&format=json&fields=id"%(nodeId, (offset*20))
-    r = requests.get(query, auth=('gyang','waterfire'))
+    r = requests.get(query, auth=('username','password'))
     if r.ok:
         if (r.json()['objects']):
             map((lambda x:rtx.append(relationshipStatement, {"nOpin":nodeId, "mOpin":x})), map((lambda x:x['id']), r.json()['objects']))
@@ -99,7 +99,7 @@ def jsonRelationshipParser(nodeId, offset):
 # ~~ Initial Graph Creation  ~~ #
 
 def graphCreation():
-    gdb = Graph("http://neo4j:Capso123@ec2-54-164-106-231.compute-1.amazonaws.com:7474/db/data/")
+    gdb = Graph("localhost:7474/db/data/")
     gdb.cypher.execute("CREATE CONSTRAINT ON (n:dailyOpinion) ASSERT n.opinionid IS UNIQUE")
     return gdb
 
@@ -135,7 +135,7 @@ def testInitialContact(inputDate):
     while testQueryResult is None:
         try:
             query = "https://www.courtlistener.com/api/rest/v2/document/?date_modified__gt=%s+00:00Z&date_modified__lt=%s+00:00Z&order_by=date_modified"%(inputDate.strftime('%Y-%m-%d') , (inputDate + timedelta(days=1)).strftime('%Y-%m-%d'))
-            r = requests.get(query, auth=('gyang','waterfire'))
+            r = requests.get(query, auth=('username','password'))
             testQueryResult = "SUCCESS"
             logging.info(testQueryResult + ": REQUEST SUCCESSFULLY HANDLED AT: " + inputDate.strftime("%Y-%m-%d:%H:%M:%S"))
             #
