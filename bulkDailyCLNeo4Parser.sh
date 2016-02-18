@@ -1,1 +1,1 @@
-python bulkDailyCLNeo4Parser.py &
+python bulkDailyCLNeo4Parser.py & 
